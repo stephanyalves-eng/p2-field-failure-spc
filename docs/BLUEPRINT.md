@@ -103,10 +103,10 @@ tests/                         # known-answer tests for SPC, capability and MSA
 
 ## 9. Deliverables and releases
 
-| Release | Milestone | Content |
-|---|---|---|
-| v0.1 | Sprint 3 (ends 17 Jan 2027) | Field failure base, Paretos, 8D |
-| v1.0 | Sprint 4 (ends 31 Jan 2027) | Simulator, SPC, capability, Gage R&R, PFMEA, control plan, Streamlit app, case study |
+| Release | Content |
+|---|---|
+| v0.1 | Field failure base, Paretos, 8D |
+| v1.0 | Simulator, SPC, capability, Gage R&R, PFMEA, control plan, Streamlit app, case study |
 
 ## 10. Assumptions and risks
 
