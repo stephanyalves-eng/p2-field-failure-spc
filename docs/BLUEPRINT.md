@@ -14,8 +14,8 @@ Which failure modes dominate the field in vehicle and aircraft electrical system
 
 | In scope | Out of scope |
 |---|---|
-| NHTSA complaints and recalls for 2–3 electric vehicle models | Proprietary warranty data |
-| FAA SDR reports for one aircraft model, ATA chapter 24 | Failure prediction with machine learning (stretch only) |
+| NHTSA complaints and recalls for 4 electric vehicle models (Hyundai Ioniq 5, Ford Mustang Mach-E, Tesla Model 3, Chevrolet Bolt EV) | Proprietary warranty data |
+| FAA SDR reports for the Airbus A320 family, ATA chapter 24 | Failure prediction with machine learning (stretch only) |
 | One 8D on a real public recall, with fact vs. hypothesis marked | Claims about a manufacturer beyond what it published |
 | Simulated crimp height process, SPC, capability, Gage R&R, PFMEA, control plan | Real plant measurements |
 | Streamlit app that charts any uploaded CSV | |
