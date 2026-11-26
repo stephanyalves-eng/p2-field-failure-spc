@@ -1,0 +1,9 @@
+label,count,share,cum_share
+Generator and drive (IDG),62,0.4025974025974026,0.4025974025974026
+"Contactor, relay or circuit protection",18,0.11688311688311688,0.5194805194805195
+"Wiring, connector or terminal",15,0.09740259740259741,0.6168831168831169
+Generator control unit (GCU),14,0.09090909090909091,0.7077922077922079
+"Cabin power (outlets, ports, seat boxes)",13,0.08441558441558442,0.7922077922077922
+"Conversion, battery and charger",8,0.05194805194805195,0.8441558441558442
+Warning only or part not identified,15,0.09740259740259741,0.9415584415584416
+Other system filed under ATA 24,9,0.05844155844155844,1.0
