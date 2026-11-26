@@ -4,3 +4,4 @@ jupyter
 ruff
 nbstripout
 pytest
+matplotlib
