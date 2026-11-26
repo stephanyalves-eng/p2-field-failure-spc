@@ -56,6 +56,21 @@ Notebook: [notebooks/01_field_failures.ipynb](notebooks/01_field_failures.ipynb)
 
 ![Electrical share by model year](reports/figures/nhtsa_electrical_share_by_model_year.png)
 
+### Field failures (FAA SDR, Airbus A320 family, ATA 24)
+
+154 Service Difficulty Reports in 2024–2025 for the A318–A321 (neo included) in chapter 24, electrical power.
+
+| Pareto | Top 3 | Top 3 share |
+|---|---|---:|
+| By JASC subsystem | 2421 AC generator-alternator, 2497 Electrical power system wiring, 2400 Electrical power system | 82.5% |
+| By part group | Generator and drive (IDG), Contactor, relay or circuit protection, Wiring, connector or terminal | 61.7% |
+
+- The AC generator-alternator (JASC 2421) alone holds 58% of the reports; by part, the IDG and generator hold 40% and the generator control unit another 9%.
+- Wiring, connectors and terminals are 10% of the reports by part (15), and JASC 2497 (power system wiring) is 16% (24): the wiring code also carries reports whose part is not named.
+- 16% of the reports (24) name only a warning message, no part, or a part from another system filed under chapter 24; they stay in the denominator.
+
+![A320 SDRs by part group](reports/figures/faa_sdr_a320_ata24_part_pareto.png)
+
 ## Data
 
 Sources, extraction dates and licenses: [data/README.md](data/README.md).
@@ -77,12 +92,14 @@ A complaint can name several components, so the 7,483 complaints make 12,837 com
 - **Component taxonomy:** the NHTSA top-level system (text before the first colon) is mapped to 11 groups plus "Unknown or other" ([data/mappings/component_taxonomy.csv](data/mappings/component_taxonomy.csv)). An unmapped system stops the analysis.
 - **Counting:** a complaint counts once in every group it names; Pareto shares are shares of these complaint-group mentions. "Unknown or other" and "Not coded" stay in the denominator and are excluded from the top 3.
 - **Electrical failure modes:** coded from the complaint narrative with ordered keyword rules, first match wins ([data/mappings/electrical_failure_modes.csv](data/mappings/electrical_failure_modes.csv)).
+- **FAA SDR:** reports filtered to the A320 family and JASC codes 24xx; Pareto by JASC subsystem (official titles, [data/mappings/jasc_ata24.csv](data/mappings/jasc_ata24.csv)) and by part group ([data/mappings/sdr_part_groups.csv](data/mappings/sdr_part_groups.csv)).
 - **Trend by model year:** share of each model year's complaints that name the electrical system, because sales volumes are not available to compute rates.
 
 ## Limitations
 
 - Complaints are self-reported and not verified by NHTSA; counts reflect owner reporting behavior as well as defects.
 - Without sales or fleet data, complaint counts are not failure rates. Recent model years have had less time in service.
+- The SDR sample is small (154 reports in two years) and depends on what operators choose to report and how they code it; several chapter 24 reports concern other systems.
 - Keyword coding of narratives is a first pass: 25% of electrical complaints stay "Not coded", and a spot check found charging-cable complaints in the "Wiring, connector or terminal" bucket.
 
 ## How to run

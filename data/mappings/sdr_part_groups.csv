@@ -1,0 +1,40 @@
+part_name,group
+IDG,Generator and drive (IDG)
+GENERATOR,Generator and drive (IDG)
+STATOR,Generator and drive (IDG)
+OIL COOLER,Generator and drive (IDG)
+OIL SYSTEM,Generator and drive (IDG)
+FILTER,Generator and drive (IDG)
+GCU,Generator control unit (GCU)
+CONTACTOR,"Contactor, relay or circuit protection"
+RELAY,"Contactor, relay or circuit protection"
+CIRCUIT BREAKER,"Contactor, relay or circuit protection"
+LIMITER,"Contactor, relay or circuit protection"
+FUSE,"Contactor, relay or circuit protection"
+WIRE HARNESS,"Wiring, connector or terminal"
+WIRE,"Wiring, connector or terminal"
+CONNECTOR,"Wiring, connector or terminal"
+ELEC CONNECTOR,"Wiring, connector or terminal"
+TERMINAL,"Wiring, connector or terminal"
+FEEDER CABLE,"Wiring, connector or terminal"
+RECEPTACLE,"Wiring, connector or terminal"
+BUSS,"Wiring, connector or terminal"
+OUTLET,"Cabin power (outlets, ports, seat boxes)"
+POWER PORT,"Cabin power (outlets, ports, seat boxes)"
+ELECTRICAL BOX,"Cabin power (outlets, ports, seat boxes)"
+TRANSFORMER,"Conversion, battery and charger"
+TRANS RECTIFIER,"Conversion, battery and charger"
+CHARGER,"Conversion, battery and charger"
+BATTERY,"Conversion, battery and charger"
+WARNING MESSAGE,Warning only or part not identified
+WARNING LIGHT,Warning only or part not identified
+LIGHT SYS,Warning only or part not identified
+UNKNOWN,Warning only or part not identified
+SEAL,Other system filed under ATA 24
+ACTUATOR,Other system filed under ATA 24
+STRUT,Other system filed under ATA 24
+COMPUTER,Other system filed under ATA 24
+IRU,Other system filed under ATA 24
+DAU,Other system filed under ATA 24
+CIDS,Other system filed under ATA 24
+COFFEEMAKER,Other system filed under ATA 24

@@ -32,6 +32,26 @@ def load_failure_mode_rules(
     return list(zip(table["failure_mode"], table["pattern"], strict=True))
 
 
+def load_jasc_titles(path: Path = MAPPINGS_DIR / "jasc_ata24.csv") -> dict[str, str]:
+    """JASC code -> official title (FAA JASC code table, ATA chapter 24)."""
+    table = pd.read_csv(path, dtype=str)
+    return dict(zip(table["jasc_code"], table["title"], strict=True))
+
+
+def load_part_groups(path: Path = MAPPINGS_DIR / "sdr_part_groups.csv") -> dict[str, str]:
+    """SDR part name -> project part group."""
+    table = pd.read_csv(path, dtype=str)
+    return dict(zip(table["part_name"], table["group"], strict=True))
+
+
+def map_values(values: pd.Series, mapping: dict[str, str]) -> pd.Series:
+    """Map values with a published table; raise if any value is missing from it."""
+    missing = sorted(set(values) - set(mapping))
+    if missing:
+        raise KeyError(f"values missing from the mapping: {missing}")
+    return values.map(mapping)
+
+
 def system_of(component: pd.Series) -> pd.Series:
     """Top-level system: the text before the first colon, trimmed and upper-cased."""
     return component.str.split(":", n=1).str[0].str.strip().str.upper()
@@ -39,11 +59,7 @@ def system_of(component: pd.Series) -> pd.Series:
 
 def map_groups(component: pd.Series, taxonomy: dict[str, str]) -> pd.Series:
     """Map component text to groups; raise if any top-level system is not in the taxonomy."""
-    systems = system_of(component)
-    missing = sorted(set(systems) - set(taxonomy))
-    if missing:
-        raise KeyError(f"systems missing from the taxonomy: {missing}")
-    return systems.map(taxonomy)
+    return map_values(system_of(component), taxonomy)
 
 
 def complaint_mentions(df: pd.DataFrame, group_col: str) -> pd.DataFrame:
