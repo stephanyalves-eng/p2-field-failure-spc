@@ -1,0 +1,37 @@
+nhtsa_system,group
+ELECTRICAL SYSTEM,Electrical system
+FUEL/PROPULSION SYSTEM,Propulsion and powertrain
+HYBRID PROPULSION SYSTEM,Propulsion and powertrain
+POWER TRAIN,Propulsion and powertrain
+ENGINE,Propulsion and powertrain
+ENGINE AND ENGINE COOLING,Propulsion and powertrain
+"FUEL SYSTEM, GASOLINE",Propulsion and powertrain
+FORWARD COLLISION AVOIDANCE,Driver assistance
+LANE DEPARTURE,Driver assistance
+BACK OVER PREVENTION,Driver assistance
+VEHICLE SPEED CONTROL,Speed control
+SERVICE BRAKES,Brakes and stability control
+"SERVICE BRAKES, AIR",Brakes and stability control
+"SERVICE BRAKES, HYDRAULIC",Brakes and stability control
+"SERVICE BRAKES, HYDRAULIC; AUTOHOLD BRAKE SYSTEM/BRAKE HOLD",Brakes and stability control
+PARKING BRAKE,Brakes and stability control
+ELECTRONIC STABILITY CONTROL (ESC),Brakes and stability control
+STEERING,Steering
+SUSPENSION,"Suspension, wheels and tires"
+WHEELS,"Suspension, wheels and tires"
+TIRES,"Suspension, wheels and tires"
+AIR BAGS,Occupant protection
+SEAT BELTS,Occupant protection
+SEATS,Occupant protection
+STRUCTURE,"Body, lighting and visibility"
+LATCHES/LOCKS/LINKAGES,"Body, lighting and visibility"
+VISIBILITY,"Body, lighting and visibility"
+VISIBILITY/WIPER,"Body, lighting and visibility"
+EXTERIOR LIGHTING,"Body, lighting and visibility"
+TRAILER HITCHES,"Body, lighting and visibility"
+FIRERELATED,Fire (system not stated)
+EQUIPMENT,Equipment and accessories
+EQUIPMENT ADAPTIVE/MOBILITY,Equipment and accessories
+"CARRY HANDLE, SHELL, BASE",Equipment and accessories
+"CHEST CLIP, BUCKLE, HARNESS",Equipment and accessories
+UNKNOWN OR OTHER,Unknown or other

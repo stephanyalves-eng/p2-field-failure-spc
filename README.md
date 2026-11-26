@@ -35,6 +35,27 @@ Which failure modes dominate the field in vehicle and aircraft electrical system
 
 ## Result
 
+### Field failures (NHTSA, four EV models)
+
+Notebook: [notebooks/01_field_failures.ipynb](notebooks/01_field_failures.ipynb). Tables: [reports/tables](reports/tables).
+
+| Pareto | Top 3 | Top 3 share |
+|---|---|---:|
+| Complaints by component group (10,944 complaint-group mentions) | Electrical system, Driver assistance, Propulsion and powertrain | 52.8% |
+| Recall campaigns by component group (87 campaigns) | Electrical system, Body, lighting and visibility, Occupant protection | 64.2% |
+| Electrical complaints by failure mode (2,326 complaints) | Charging unit (ICCU / DC-DC / onboard charger), Display, software and controls, High-voltage battery or contactor | 50.4% |
+
+- The electrical system is the largest group in both complaints (21%) and recall campaigns (31%).
+- Within electrical complaints, the charging unit (ICCU) leads with 30%, and 698 of these 699 complaints are on the Ioniq 5.
+- Wiring, connector or terminal problems are 6% of electrical complaints (132); thermal events (burning, smoke, fire) are another 7%, led by the Bolt EV (93 of 155).
+- By model year (years with at least 30 complaints), the share of complaints naming the electrical system is 71–79% for the Ioniq 5 (2022–2025), 41–65% for the Mach-E and 29–54% for the Bolt EV, against 8–21% for the Model 3.
+
+![Complaints by component group](reports/figures/nhtsa_complaints_pareto.png)
+
+![Electrical failure modes](reports/figures/nhtsa_electrical_failure_modes_pareto.png)
+
+![Electrical share by model year](reports/figures/nhtsa_electrical_share_by_model_year.png)
+
 ## Data
 
 Sources, extraction dates and licenses: [data/README.md](data/README.md).
@@ -53,7 +74,16 @@ A complaint can name several components, so the 7,483 complaints make 12,837 com
 
 ## Method
 
+- **Component taxonomy:** the NHTSA top-level system (text before the first colon) is mapped to 11 groups plus "Unknown or other" ([data/mappings/component_taxonomy.csv](data/mappings/component_taxonomy.csv)). An unmapped system stops the analysis.
+- **Counting:** a complaint counts once in every group it names; Pareto shares are shares of these complaint-group mentions. "Unknown or other" and "Not coded" stay in the denominator and are excluded from the top 3.
+- **Electrical failure modes:** coded from the complaint narrative with ordered keyword rules, first match wins ([data/mappings/electrical_failure_modes.csv](data/mappings/electrical_failure_modes.csv)).
+- **Trend by model year:** share of each model year's complaints that name the electrical system, because sales volumes are not available to compute rates.
+
 ## Limitations
+
+- Complaints are self-reported and not verified by NHTSA; counts reflect owner reporting behavior as well as defects.
+- Without sales or fleet data, complaint counts are not failure rates. Recent model years have had less time in service.
+- Keyword coding of narratives is a first pass: 25% of electrical complaints stay "Not coded", and a spot check found charging-cable complaints in the "Wiring, connector or terminal" bucket.
 
 ## How to run
 

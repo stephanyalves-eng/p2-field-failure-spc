@@ -1,0 +1,108 @@
+"""Static charts for the field failure analysis (matplotlib, light theme)."""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+import pandas as pd  # noqa: E402
+
+SURFACE = "#fcfcfb"
+TEXT = "#0b0b0b"
+TEXT_SECONDARY = "#52514e"
+GRID = "#e4e3df"
+SERIES_1 = "#2a78d6"
+NEUTRAL = "#b5b4ae"
+
+DISPLAY_NAMES = {
+    "BOLT EV": "Bolt EV",
+    "IONIQ 5": "Ioniq 5",
+    "MODEL 3": "Model 3",
+    "MUSTANG MACH E": "Mustang Mach-E",
+}
+
+
+def _style(ax: plt.Axes) -> None:
+    ax.set_facecolor(SURFACE)
+    for side in ("top", "right"):
+        ax.spines[side].set_visible(False)
+    for side in ("left", "bottom"):
+        ax.spines[side].set_color(GRID)
+    ax.tick_params(colors=TEXT_SECONDARY, labelsize=9)
+
+
+def pareto_chart(
+    table: pd.DataFrame,
+    title: str,
+    path: Path,
+    neutral_labels: list[str] | None = None,
+    unit: str = "complaints",
+) -> Path:
+    """Horizontal Pareto: bars show each label's share; text gives count and cumulative share.
+
+    The cumulative share is written next to each bar instead of drawn on a second axis.
+    Labels in `neutral_labels` (unknown or not coded) are drawn in gray.
+    """
+    neutral = set(neutral_labels or [])
+    rows = table.iloc[::-1]  # largest at the top
+    fig, ax = plt.subplots(figsize=(8, 0.42 * len(rows) + 1.2), facecolor=SURFACE)
+    colors = [NEUTRAL if label in neutral else SERIES_1 for label in rows["label"]]
+    ax.barh(rows["label"], rows["share"] * 100, color=colors, height=0.6)
+    xmax = rows["share"].max() * 100
+    for y, (_, r) in enumerate(rows.iterrows()):
+        ax.text(
+            r["share"] * 100 + xmax * 0.01,
+            y,
+            f"{r['count']:,}  ({r['share']:.0%}, cum. {r['cum_share']:.0%})",
+            va="center",
+            fontsize=8.5,
+            color=TEXT_SECONDARY,
+        )
+    ax.set_xlim(0, xmax * 1.45)
+    ax.set_xlabel(f"Share of {unit} (%)", color=TEXT_SECONDARY, fontsize=9)
+    ax.xaxis.grid(True, color=GRID, linewidth=0.8)
+    ax.set_axisbelow(True)
+    _style(ax)
+    ax.tick_params(axis="y", colors=TEXT, length=0)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path
+
+
+def share_trend_chart(
+    trend: pd.DataFrame, title: str, path: Path, min_complaints: int = 30
+) -> Path:
+    """Small multiples, one panel per vehicle: target share of complaints by model year.
+
+    Model years with fewer than `min_complaints` complaints are left out; their share
+    would move by several points with each new complaint. Counts per point are in the table.
+    """
+    trend = trend[trend["complaints"] >= min_complaints]
+    vehicles = sorted(trend["MODELTXT"].unique())
+    fig, axes = plt.subplots(
+        1, len(vehicles), figsize=(2.6 * len(vehicles), 3), sharey=True, facecolor=SURFACE
+    )
+    for ax, vehicle in zip(axes, vehicles, strict=True):
+        d = trend[trend["MODELTXT"] == vehicle].sort_values("YEARTXT")
+        ax.plot(d["YEARTXT"], d["target_share"] * 100, color=SERIES_1, linewidth=2)
+        ax.scatter(d["YEARTXT"], d["target_share"] * 100, color=SERIES_1, s=28, zorder=3)
+        ax.set_title(DISPLAY_NAMES.get(vehicle, vehicle), color=TEXT, fontsize=10)
+        ax.set_ylim(0, 100)
+        ax.yaxis.grid(True, color=GRID, linewidth=0.8)
+        ax.set_axisbelow(True)
+        ax.tick_params(axis="x", rotation=45)
+        _style(ax)
+    axes[0].set_ylabel("Share of complaints (%)", color=TEXT_SECONDARY, fontsize=9)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.supxlabel("Model year", color=TEXT_SECONDARY, fontsize=9)
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path

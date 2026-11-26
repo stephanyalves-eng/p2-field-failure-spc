@@ -1,0 +1,9 @@
+priority,failure_mode,pattern
+1,Charging unit (ICCU / DC-DC / onboard charger),\bICCU\b|INTEGRATED CHARGING CONTROL|\bDC[-/ ]?DC\b|\bOBC\b|\bOBCM\b|ON[- ]?BOARD CHARG
+2,"Wiring, connector or terminal",\bWIR(E|ES|ING)\b|\bHARNESS|\bCONNECTOR|\bTERMINAL|\bCRIMP|SHORT CIRCUIT|\bSHORTED\b|\bSHORTING\b|\bFUSE
+3,High-voltage battery or contactor,HIGH[- ]VOLTAGE|\bHV\b|TRACTION BATTERY|\bCONTACTOR|JUNCTION BOX|\bBJB\b|BATTERY PACK
+4,12 V battery and low-voltage supply,\b12 ?V\b|12[- ]VOLT|LOW[- ]VOLTAGE|AUXILIARY BATTERY|\bAUX BATTERY
+5,"Thermal event (burning, smoke, fire)",\bFIRE\b|\bSMOKE|\bBURN|\bMELT|OVERHEAT
+6,"Display, software and controls",SCREEN|DISPLAY|SOFTWARE|\bUPDATE|INFOTAINMENT|\bOTA\b
+7,"Driver assistance, cameras and sensors",AUTOPILOT|SELF[- ]DRIV|\bCAMERA|\bSENSOR|PHANTOM|CRUISE
+8,Loss of propulsion (cause not stated),LOS(S|T) (OF )?(MOTIVE )?POWER|REDUCED POWER|POWER IS REDUCED|TURTLE|PROPULSION
