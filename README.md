@@ -37,6 +37,20 @@ Which failure modes dominate the field in vehicle and aircraft electrical system
 
 ## Data
 
+Sources, extraction dates and licenses: [data/README.md](data/README.md).
+
+**NHTSA field data** (flat files extracted 2026-11-26, `python -m src.data.download_nhtsa`):
+
+| Vehicle | Complaints | Recall campaigns |
+|---|---:|---:|
+| Tesla Model 3 | 4,433 | 36 |
+| Hyundai Ioniq 5 | 1,362 | 15 |
+| Chevrolet Bolt EV | 996 | 14 |
+| Ford Mustang Mach-E | 692 | 22 |
+| **Total** | **7,483** | **87** |
+
+A complaint can name several components, so the 7,483 complaints make 12,837 complaint-component rows.
+
 ## Method
 
 ## Limitations
