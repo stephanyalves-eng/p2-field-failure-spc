@@ -1,0 +1,60 @@
+{
+  "seed": 20261126,
+  "config": {
+    "seed": 20261126,
+    "days": 30,
+    "machines": [
+      "A",
+      "B"
+    ],
+    "shifts": [
+      "1",
+      "2",
+      "3"
+    ],
+    "subgroups_per_shift": 2,
+    "subgroup_size": 5,
+    "lsl": 1.75,
+    "target": 1.8,
+    "usl": 1.85,
+    "mean": 1.8,
+    "sigma": 0.01,
+    "tool_change_machine": "B",
+    "tool_change_day": 16,
+    "mean_shift": 0.015,
+    "shift3_sigma_factor": 1.5,
+    "resolution": 0.001
+  },
+  "spec": {
+    "lsl": 1.75,
+    "target": 1.8,
+    "usl": 1.85
+  },
+  "base_process": {
+    "mean_mm": 1.8,
+    "sigma_mm": 0.01,
+    "cp": 1.667,
+    "cpk": 1.667
+  },
+  "special_causes": [
+    {
+      "type": "mean shift after tool change",
+      "machine": "B",
+      "from_day": 16,
+      "first_subgroup": 182,
+      "mean_shift_mm": 0.015,
+      "cpk_after": 1.167
+    },
+    {
+      "type": "higher variance",
+      "shift": "3",
+      "machines": [
+        "A",
+        "B"
+      ],
+      "sigma_mm": 0.015,
+      "sigma_factor": 1.5,
+      "cpk_on_shift": 1.111
+    }
+  ]
+}
