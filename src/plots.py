@@ -8,6 +8,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+import numpy as np  # noqa: E402
 import pandas as pd  # noqa: E402
 
 SURFACE = "#fcfcfb"
@@ -145,6 +146,53 @@ def xbar_r_chart(table: pd.DataFrame, lim: dict, title: str, path: Path) -> Path
     ]
     ax_x.legend(handles=handles, loc="upper left", fontsize=8, frameon=False, ncol=4)
     fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path
+
+
+def capability_histograms(
+    panels: list[tuple[str, pd.Series]], lsl: float, usl: float, title: str, path: Path
+) -> Path:
+    """One histogram per panel (shared x axis) with the spec limits marked."""
+    fig, axes = plt.subplots(
+        len(panels), 1, figsize=(9, 2.4 * len(panels)), sharex=True, facecolor=SURFACE
+    )
+    bins = np.arange(lsl - 0.01, usl + 0.0105, 0.002)
+    for ax, (label, values) in zip(axes, panels, strict=True):
+        ax.hist(values, bins=bins, color=SERIES_1, edgecolor=SURFACE, linewidth=0.5)
+        for limit, name in ((lsl, "LSL"), (usl, "USL")):
+            ax.axvline(limit, color=SIGNAL, lw=1.5)
+            ax.text(limit, ax.get_ylim()[1] * 0.92, f" {name}", color=TEXT_SECONDARY, fontsize=8)
+        ax.set_title(label, loc="left", fontsize=9.5, color=TEXT)
+        ax.set_ylabel("Parts", color=TEXT_SECONDARY, fontsize=9)
+        _style(ax)
+    axes[-1].set_xlabel("Crimp height (mm)", color=TEXT_SECONDARY, fontsize=9)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path
+
+
+def normal_probability_plot(values: pd.Series, title: str, path: Path) -> Path:
+    """Ordered values against normal quantiles (Blom plotting positions)."""
+    from scipy import stats
+
+    x = np.sort(np.asarray(values, dtype=float))
+    n = len(x)
+    q = stats.norm.ppf((np.arange(1, n + 1) - 0.375) / (n + 0.25))
+    slope, intercept = np.polyfit(q, x, 1)
+    fig, ax = plt.subplots(figsize=(5.5, 4.5), facecolor=SURFACE)
+    ax.scatter(q, x, s=8, color=SERIES_1, alpha=0.7, lw=0)
+    ax.plot(q, intercept + slope * q, color=TEXT_SECONDARY, lw=1)
+    ax.set_xlabel("Normal quantile", color=TEXT_SECONDARY, fontsize=9)
+    ax.set_ylabel("Crimp height (mm)", color=TEXT_SECONDARY, fontsize=9)
+    _style(ax)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=10.5, fontweight="bold")
     fig.tight_layout()
     path.parent.mkdir(parents=True, exist_ok=True)
     fig.savefig(path, dpi=150)
