@@ -17,6 +17,7 @@ import matplotlib
 
 matplotlib.use("Agg")
 import matplotlib.pyplot as plt  # noqa: E402
+from reportlab import rl_config  # noqa: E402
 from reportlab.lib import colors  # noqa: E402
 from reportlab.lib.pagesizes import A4  # noqa: E402
 from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet  # noqa: E402
@@ -33,6 +34,9 @@ from reportlab.platypus import (  # noqa: E402
 )
 
 from src.plots import GRID, SERIES_1, SURFACE, TEXT, TEXT_SECONDARY  # noqa: E402
+
+# Fixed timestamps and document id, so rebuilding the PDF from the same source gives the same bytes.
+rl_config.invariant = 1
 
 ROOT = Path(__file__).resolve().parents[2]
 REPORTS = ROOT / "reports"

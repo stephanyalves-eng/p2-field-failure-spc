@@ -2,6 +2,8 @@
 
 Technical design and backlog map: [docs/BLUEPRINT.md](docs/BLUEPRINT.md).
 
+**Status: v0.1.** Field failure analysis (NHTSA and FAA data, Pareto charts) and an 8D on a real recall are done. The process side (crimp height simulator, SPC, capability, Gage R&R, PFMEA, control plan and app) comes in v1.0.
+
 ## Business question
 
 Which failure modes dominate the field in vehicle and aircraft electrical systems, and is the terminal crimping process that can cause them capable and in control?
@@ -34,6 +36,12 @@ Which failure modes dominate the field in vehicle and aircraft electrical system
 | Detection quality | Share of injected special causes flagged by the charts | All injected shifts flagged; false alarm rate reported |
 
 ## Result
+
+### Summary so far
+
+- In the field data, the electrical system is the largest component group for the four electric vehicles (21% of complaint mentions, 31% of recall campaigns), and the AC generator and its drive dominate A320 family reports in ATA chapter 24.
+- Wiring, connector and terminal problems are a small but steady share in both sources: 6% of EV electrical complaints and 10% of A320 ATA 24 reports by part.
+- The 8D on recall 22V-317 shows a harness defect (terminals in the wrong connector cavities) that escaped because a detection barrier was assumed and not measured. The v1.0 work measures the crimping process and its gauge instead of assuming them.
 
 ### Field failures (NHTSA, four EV models)
 
@@ -97,6 +105,10 @@ Sources, extraction dates and licenses: [data/README.md](data/README.md).
 
 A complaint can name several components, so the 7,483 complaints make 12,837 complaint-component rows.
 
+**FAA SDR** (yearly files for 2024 and 2025, extracted 2026-11-26, `python -m src.data.download_faa_sdr`): 154 reports for the Airbus A318–A321 with JASC codes 24xx (90 in 2024, 64 in 2025).
+
+**Recall 22V-317 documents** (Part 573 reports, chronology, service bulletin) for the 8D: listed with links in [reports/8D.md](reports/8D.md).
+
 ## Method
 
 - **Component taxonomy:** the NHTSA top-level system (text before the first colon) is mapped to 11 groups plus "Unknown or other" ([data/mappings/component_taxonomy.csv](data/mappings/component_taxonomy.csv)). An unmapped system stops the analysis.
@@ -121,6 +133,17 @@ pip install -r requirements.txt
 nbstripout --install            # once per clone: strips notebook outputs on commit
 ```
 
+Reproduce the v0.1 results (downloads about 285 MB into `data/raw/`, which is git-ignored):
+
+```bash
+python -m src.data.download_nhtsa      # NHTSA complaints and recalls -> data/processed/
+python -m src.data.download_faa_sdr    # FAA SDR, A320 family, ATA 24 -> data/processed/
+jupyter nbconvert --to notebook --execute --inplace notebooks/01_field_failures.ipynb
+python -m src.reports.build_8d         # Ishikawa figure and reports/8D.pdf from reports/8D.md
+```
+
+The notebook writes the figures to `reports/figures/` and the Pareto tables to `reports/tables/`.
+
 Before committing:
 
 ```bash
@@ -130,3 +153,7 @@ pytest
 ```
 
 ## How AI was used
+
+- **Claude (Claude Code)** wrote the extraction scripts, the analysis and chart code, the tests and the first draft of the README and of the 8D, and checked every number in the README against the generated tables.
+- **I** chose the scope (the four vehicles, the A320 family, the recall for the 8D), approved each download of public data, and reviewed and merged every change through a pull request.
+- **Judgment calls open to review:** the component taxonomy, the keyword rules for electrical failure modes, the SDR part groups and the hypotheses in the 8D (tagged [H]) were drafted with Claude and are published in the repository so they can be checked and changed.
