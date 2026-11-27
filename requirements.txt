@@ -5,3 +5,4 @@ ruff
 nbstripout
 pytest
 matplotlib
+reportlab

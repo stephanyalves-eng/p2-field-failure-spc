@@ -71,6 +71,16 @@ Notebook: [notebooks/01_field_failures.ipynb](notebooks/01_field_failures.ipynb)
 
 ![A320 SDRs by part group](reports/figures/faa_sdr_a320_ata24_part_pareto.png)
 
+### 8D on a real recall
+
+[reports/8D.pdf](reports/8D.pdf) (source: [reports/8D.md](reports/8D.md)) works through D1–D8 on NHTSA recall 22V-317: on 7 Tesla Model 3 and Model Y vehicles, the fisheye and narrow camera terminals were installed into each other's cavities in the harness connector, swapping the camera views. Every statement is tagged as published fact (with a link to the Part 573 report, chronology or service bulletin), hypothesis or study assumption.
+
+- **Occurrence (published):** terminals installed in the wrong cavities during the supplier's harness manufacturing.
+- **Escape (published chronology):** an investigation was closed in Feb 2021 on the assessment that affected cars could not pass field camera calibration; in Feb 2022 some had passed.
+- **Most likely root cause (hypothesis):** interchangeable terminals with no error-proofing, tests that check continuity but not cavity position, and a detection assumption that was not verified.
+
+![Ishikawa](reports/figures/8d_ishikawa.png)
+
 ## Data
 
 Sources, extraction dates and licenses: [data/README.md](data/README.md).
