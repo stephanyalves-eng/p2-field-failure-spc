@@ -6,3 +6,4 @@ nbstripout
 pytest
 matplotlib
 reportlab
+scipy>=1.17

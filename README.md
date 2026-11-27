@@ -107,6 +107,37 @@ Limits per machine from a Phase I baseline (first 5 days, 30 subgroups of 5), th
 
 ![Machine B X-bar and R](reports/figures/spc_xbar_r_machine_B.png)
 
+### Capability and detection
+
+Same notebook, sections 5–7. Tables: [capability.csv](reports/tables/capability.csv), [detection_scores.csv](reports/tables/detection_scores.csv), [capability_vs_truth.csv](reports/tables/capability_vs_truth.csv).
+
+Special causes removed on the SPC evidence only: machine B from subgroup 182 on (sustained X-bar signals) and shift 3 on both machines (all R signals, higher range).
+
+| Data set | n | Cp | Cpk (95% interval) | Pp | Ppk |
+|---|---:|---:|---|---:|---:|
+| All data, before | 1,800 | 1.41 | 1.30 (1.26–1.35) | 1.24 | 1.15 |
+| Machine B, before | 900 | 1.43 | 1.20 (1.14–1.26) | 1.23 | 1.04 |
+| All data, after removal | 900 | 1.63 | 1.61 (1.53–1.69) | 1.64 | 1.62 |
+| Machine A, after removal | 600 | 1.68 | 1.67 (1.57–1.77) | 1.66 | 1.65 |
+| Machine B, after removal | 300 | 1.53 | 1.50 (1.38–1.63) | 1.59 | 1.56 |
+
+- **Before:** Cpk 1.30 is below the 1.33 acceptance target (its interval, 1.26–1.35, reaches the target only at the top), so action is required; machine B alone is clearly below (1.14–1.26). All 4 parts out of spec (above 1.85 mm) come from machine B after subgroup 182 on shift 3, where both causes act together.
+- **After removal:** Cpk 1.61 clears the target, and for all data Cp, Cpk, Pp and Ppk agree within 0.03, as expected for a stable process.
+- **Normality:** Anderson-Darling rejects at 5% for most sets (p ≈ 0.01–0.04, interpolated). The data hold only 48–85 distinct values because of the 0.001 mm resolution, and the normal probability plot is straight apart from the rounding steps, so the normal-based indices are used with this caveat.
+
+**Scored against the simulated truth** (only section 7 opens the truth file):
+
+| Check | Result |
+|---|---|
+| Machine B mean shift (+0.015 mm from subgroup 182) | Flagged at the first shifted subgroup (delay 0); 90 of 90 shifted subgroups flagged, 0 of 90 earlier machine B subgroups |
+| Shift 3 variance (×1.5) | R chart flags 6 of 120 shift 3 subgroups (5%) and no other shift; the range-by-shift stratification shows it clearly (1.66× and 1.39×) |
+| X-bar false alarms | 5 of 180 subgroups with no injected cause (2.8%), against about 1.1% expected from the NIST figure of one false alarm per 91.75 points |
+| Cpk of the base process | 1.67 estimated vs 1.667 true |
+| Cpk on machine B after the tool change | 1.22 vs 1.167 true |
+| Cpk on shift 3 (machine A) | 1.01 vs 1.111 true, just outside the approximate 95% interval (0.92–1.10) |
+
+![Capability histograms](reports/figures/capability_histograms.png)
+
 ## Data
 
 Sources, extraction dates and licenses: [data/README.md](data/README.md).
@@ -136,6 +167,7 @@ A complaint can name several components, so the 7,483 complaints make 12,837 com
 - **Electrical failure modes:** coded from the complaint narrative with ordered keyword rules, first match wins ([data/mappings/electrical_failure_modes.csv](data/mappings/electrical_failure_modes.csv)).
 - **FAA SDR:** reports filtered to the A320 family and JASC codes 24xx; Pareto by JASC subsystem (official titles, [data/mappings/jasc_ata24.csv](data/mappings/jasc_ata24.csv)) and by part group ([data/mappings/sdr_part_groups.csv](data/mappings/sdr_part_groups.csv)).
 - **SPC:** X-bar and R limits from R-bar with the NIST factors A2, D3, D4 ([NIST/SEMATECH e-Handbook 6.3.2.1](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc321.htm)); d2 by numerical integration, checked against NIST's A2 for n = 2–10. Western Electric rules 1–4 on the X-bar chart; rule 1 and the 8-point run on the R chart.
+- **Capability:** NIST 6.1.6 formulas; Cp/Cpk with within-subgroup sigma (R-bar / d2), Pp/Ppk with the overall standard deviation; approximate 95% interval for Cpk from NIST; Anderson-Darling normality test (SciPy, interpolated p-value) plus a normal probability plot.
 - **Trend by model year:** share of each model year's complaints that name the electrical system, because sales volumes are not available to compute rates.
 
 ## Limitations

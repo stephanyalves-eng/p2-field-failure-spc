@@ -1,0 +1,4 @@
+condition,true_cpk,cpk,cpk_low_95,cpk_high_95,n,truth_inside_95
+"Base process (machine A, shifts 1-2)",1.667,1.672,1.574,1.771,600,True
+Machine B after tool change (shifts 1-2),1.167,1.221,1.116,1.325,300,True
+Shift 3 (machine A),1.111,1.01,0.92,1.099,300,False
