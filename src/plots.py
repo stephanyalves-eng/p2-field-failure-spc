@@ -198,3 +198,51 @@ def normal_probability_plot(values: pd.Series, title: str, path: Path) -> Path:
     fig.savefig(path, dpi=150)
     plt.close(fig)
     return path
+
+
+def grr_study_var_chart(evaluation: pd.DataFrame, title: str, path: Path) -> Path:
+    """%Study Var by source with the 10% and 30% acceptance lines."""
+    keep = ["Total Gage R&R", "Repeatability", "Reproducibility", "Part-To-Part"]
+    ev = evaluation.set_index("source").loc[keep].iloc[::-1]
+    fig, ax = plt.subplots(figsize=(8, 3.2), facecolor=SURFACE)
+    colors = [SERIES_1 if s != "Part-To-Part" else NEUTRAL for s in ev.index]
+    ax.barh(ev.index, ev["pct_study_var"], color=colors, height=0.6)
+    for y, v in enumerate(ev["pct_study_var"]):
+        ax.text(v + 1, y, f"{v:.1f}%", va="center", fontsize=8.5, color=TEXT_SECONDARY)
+    for line, label in ((10, "10% accept"), (30, "30% reject")):
+        ax.axvline(line, color=SIGNAL, lw=1.2, ls="--")
+        ax.text(line + 0.5, len(ev) - 0.45, label, fontsize=8, color=TEXT_SECONDARY)
+    ax.set_xlim(0, 110)
+    ax.set_xlabel("% of study variation", color=TEXT_SECONDARY, fontsize=9)
+    _style(ax)
+    ax.tick_params(axis="y", colors=TEXT, length=0)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path
+
+
+def grr_by_part_chart(df: pd.DataFrame, title: str, path: Path) -> Path:
+    """Readings by part, one color per operator (fixed categorical order), part means joined."""
+    palette = [SERIES_1, SIGNAL, "#1baf7a"]  # categorical slots 1-3
+    fig, ax = plt.subplots(figsize=(9, 3.8), facecolor=SURFACE)
+    operators = sorted(df["operator"].unique())
+    for k, (op, color) in enumerate(zip(operators, palette, strict=False)):
+        d = df[df["operator"] == op]
+        ax.scatter(d["part"] + (k - 1) * 0.18, d["crimp_height_mm"], s=18, color=color,
+                   label=f"Operator {op}", edgecolor=SURFACE, linewidth=0.5)  # fmt: skip
+    means = df.groupby("part")["crimp_height_mm"].mean()
+    ax.plot(means.index, means.values, color=TEXT_SECONDARY, lw=1, label="Part mean")
+    ax.set_xticks(means.index)
+    ax.set_xlabel("Part", color=TEXT_SECONDARY, fontsize=9)
+    ax.set_ylabel("Crimp height (mm)", color=TEXT_SECONDARY, fontsize=9)
+    ax.legend(fontsize=8, frameon=False, ncol=4, loc="upper left")
+    _style(ax)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path

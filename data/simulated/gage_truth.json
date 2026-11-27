@@ -1,0 +1,42 @@
+{
+  "seed": 20261127,
+  "config": {
+    "seed": 20261127,
+    "parts": 10,
+    "operators": [
+      "A",
+      "B",
+      "C"
+    ],
+    "trials": 3,
+    "process_mean": 1.8,
+    "process_sigma": 0.01,
+    "repeatability_sigma": 0.002,
+    "operator_sigma": 0.0012,
+    "resolution": 0.001,
+    "tolerance": 0.1
+  },
+  "true_part_values_mm": [
+    1.787155,
+    1.804803,
+    1.794975,
+    1.812962,
+    1.791315,
+    1.816795,
+    1.797672,
+    1.799332,
+    1.795404,
+    1.798446
+  ],
+  "operator_bias_mm": {
+    "A": -0.000341,
+    "B": 0.001238,
+    "C": 0.000319
+  },
+  "population": {
+    "gage_rr_sd": 0.00233238075793812,
+    "pct_study_var": 22.71416369074491,
+    "pct_tolerance": 13.994284547628718,
+    "ndc": 6
+  }
+}
