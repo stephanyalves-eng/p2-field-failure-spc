@@ -8,6 +8,7 @@ Raw files live in `data/raw/` and are never committed. Processed outputs go to `
 | NHTSA recalls since 2010 (`FLAT_RCL_POST_2010.zip`) | NHTSA Office of Defects Investigation flat files | https://static.nhtsa.gov/odi/ffdd/rcl/ (layout: [RCL.txt](https://static.nhtsa.gov/odi/ffdd/rcl/RCL.txt)) | 2026-11-26 (file last modified 2026-11-25) | Same as above |
 | FAA Service Difficulty Reports 2024 and 2025 (`SDR-2024.csv`, `SDR-2025.csv`) | FAA, Download Service Difficulty Reports (SDR) by Year | https://www.faa.gov/av-info/download_SDR (files served from https://external.apic4e.faa.gov/sdrs/retrieve/) | 2026-11-26 (page last updated 2026-10-28) | U.S. Government work, public domain under 17 U.S.C. § 105; FAA terms not checked, to be confirmed |
 | FAA JASC code table (`JASC_Code.doc`) and SDR batch file layout (`Batch_File_Layout.docx`) | FAA Service Difficulty Reporting System, References page | https://sdrs.faa.gov/References.aspx | 2026-11-26 | Same as above |
+| NHTSA recall 22V-317 documents: Part 573 reports (initial, amendments 1 and 2), chronologies, service bulletin SB-22-17-007, owner letter | NHTSA recall page | https://www.nhtsa.gov/?nhtsaId=22V317000 (files under https://static.nhtsa.gov/odi/rcl/2022/) | 2026-11-26 | Documents filed with NHTSA; public record. Reuse terms not checked, to be confirmed |
 
 ## NHTSA extraction notes
 

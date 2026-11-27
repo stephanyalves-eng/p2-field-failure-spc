@@ -1,0 +1,225 @@
+"""Build the 8D deliverables: the Ishikawa figure and reports/8D.pdf from reports/8D.md.
+
+Usage:
+    python -m src.reports.build_8d
+
+The Markdown file is the source of truth. The PDF renderer supports only what 8D.md uses:
+headings (#, ##, ###), paragraphs, bullet and numbered lists, tables, images, **bold** and
+[text](url) links.
+"""
+
+from __future__ import annotations
+
+import re
+from pathlib import Path
+
+import matplotlib
+
+matplotlib.use("Agg")
+import matplotlib.pyplot as plt  # noqa: E402
+from reportlab.lib import colors  # noqa: E402
+from reportlab.lib.pagesizes import A4  # noqa: E402
+from reportlab.lib.styles import ParagraphStyle, getSampleStyleSheet  # noqa: E402
+from reportlab.lib.units import cm  # noqa: E402
+from reportlab.platypus import (  # noqa: E402
+    Image,
+    ListFlowable,
+    ListItem,
+    Paragraph,
+    SimpleDocTemplate,
+    Spacer,
+    Table,
+    TableStyle,
+)
+
+from src.plots import GRID, SERIES_1, SURFACE, TEXT, TEXT_SECONDARY  # noqa: E402
+
+ROOT = Path(__file__).resolve().parents[2]
+REPORTS = ROOT / "reports"
+
+# Ishikawa content mirrors the D4 table in 8D.md. (H) marks a hypothesis.
+ISHIKAWA = {
+    "Material": ["Look-alike coax terminals (H)", "Either terminal fits either cavity (H)"],
+    "Method": ["Insertion relies on operator choice (H)", "No error-proofing step (H)"],
+    "Man": ["Terminals inserted into each\nother's cavities (H)"],
+    "Machine": ["End-of-line test checks continuity,\nnot cavity position (H)"],
+    "Measurement": [
+        "Some swapped cars passed\nfield calibration (F, S3)",
+        "Detection assumed, not verified (H)",
+    ],
+    "Environment": ["No supported candidate"],
+}
+EFFECT = "Fisheye and narrow\ncamera feeds swapped\n(F, S1)"
+
+
+def ishikawa_figure(path: Path) -> Path:
+    """Draw a fishbone diagram with three bones above and three below the spine."""
+    fig, ax = plt.subplots(figsize=(12, 6), facecolor=SURFACE)
+    ax.set_xlim(0, 12)
+    ax.set_ylim(0, 6)
+    ax.axis("off")
+    ax.annotate(
+        "", xy=(9.6, 3), xytext=(0.4, 3), arrowprops={"arrowstyle": "-|>", "color": TEXT, "lw": 2}
+    )
+    ax.text(
+        9.75,
+        3,
+        EFFECT,
+        va="center",
+        ha="left",
+        fontsize=10,
+        fontweight="bold",
+        color=TEXT,
+        bbox={"boxstyle": "round,pad=0.4", "fc": SURFACE, "ec": SERIES_1, "lw": 1.5},
+    )
+    top = ["Material", "Method", "Man"]
+    bottom = ["Machine", "Measurement", "Environment"]
+    xs = [2.2, 5.0, 7.8]
+    for row, sign in ((top, 1), (bottom, -1)):
+        for x, name in zip(xs, row, strict=True):
+            end_y = 3 + sign * 2.3
+            ax.plot([x - 1.0, x], [end_y, 3], color=SERIES_1, lw=1.6)
+            ax.text(
+                x - 1.0,
+                end_y + sign * 0.25,
+                name,
+                ha="center",
+                va="center",
+                fontsize=10.5,
+                fontweight="bold",
+                color=TEXT,
+            )
+            for i, cause in enumerate(ISHIKAWA[name]):
+                frac = 0.35 + 0.4 * i
+                cx = x - 1.0 * (1 - frac)
+                cy = 3 + sign * 2.3 * (1 - frac)
+                ax.plot([cx - 0.25, cx], [cy, cy], color=GRID, lw=1)
+                ax.text(
+                    cx - 0.3, cy, cause, ha="right", va="center", fontsize=7.5, color=TEXT_SECONDARY
+                )
+    ax.set_title(
+        "Ishikawa (6M): recall 22V-317, swapped camera terminals",
+        loc="left",
+        fontsize=12,
+        fontweight="bold",
+        color=TEXT,
+    )
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path
+
+
+def _inline(text: str) -> str:
+    """Escape XML and convert **bold** and [text](url) to reportlab markup."""
+    text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
+    text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
+    text = re.sub(
+        r"\[([^\]]+)\]\((https?://[^)]+)\)", r'<link href="\2" color="blue">\1</link>', text
+    )
+    text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1", text)  # relative links: keep the text
+    text = re.sub(
+        r"(?<![\"'>])(https?://[^\s|)<]+)", r'<link href="\1" color="blue">\1</link>', text
+    )
+    return text
+
+
+def markdown_to_flowables(md: str, base: Path) -> list:
+    styles = getSampleStyleSheet()
+    body = ParagraphStyle("body", parent=styles["BodyText"], fontSize=9.5, leading=12.5)
+    cell = ParagraphStyle("cell", parent=body, fontSize=8, leading=10)
+    heads = {1: styles["Title"], 2: styles["Heading2"], 3: styles["Heading3"]}
+    flow: list = []
+    lines = md.splitlines()
+    i = 0
+    while i < len(lines):
+        line = lines[i]
+        if not line.strip():
+            i += 1
+            continue
+        if m := re.match(r"^(#{1,3}) (.*)", line):
+            flow.append(Paragraph(_inline(m.group(2)), heads[len(m.group(1))]))
+            i += 1
+        elif m := re.match(r"^!\[[^\]]*\]\(([^)]+)\)", line):
+            img = Image(str(base / m.group(1)))
+            scale = (A4[0] - 4 * cm) / img.drawWidth
+            img.drawWidth *= scale
+            img.drawHeight *= scale
+            flow += [img, Spacer(1, 6)]
+            i += 1
+        elif line.startswith("|"):
+            rows = []
+            while i < len(lines) and lines[i].startswith("|"):
+                cells = [c.strip() for c in lines[i].strip().strip("|").split("|")]
+                if not all(re.fullmatch(r":?-+:?", c) for c in cells):
+                    rows.append([Paragraph(_inline(c), cell) for c in cells])
+                i += 1
+            width = A4[0] - 4 * cm
+            # Column width proportional to the longest text in each column, at least 12%.
+            lengths = [max(len(r[k].text) for r in rows) for k in range(len(rows[0]))]
+            shares = [max(n / sum(lengths), 0.12) for n in lengths]
+            col = [width * x / sum(shares) for x in shares]
+            table = Table(rows, colWidths=col, repeatRows=1)
+            table.setStyle(
+                TableStyle(
+                    [
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eef7")),
+                        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor(GRID)),
+                        ("VALIGN", (0, 0), (-1, -1), "TOP"),
+                    ]
+                )
+            )
+            flow += [table, Spacer(1, 8)]
+        elif re.match(r"^(- |\d+\. )", line):
+            numbered = bool(re.match(r"^\d+\. ", line))
+            items = []
+            while i < len(lines) and re.match(r"^(- |\d+\. )", lines[i]):
+                text = re.sub(r"^(- |\d+\. )", "", lines[i])
+                items.append(ListItem(Paragraph(_inline(text), body)))
+                i += 1
+            flow += [
+                ListFlowable(
+                    items,
+                    bulletType="1" if numbered else "bullet",
+                    start=None if not numbered else 1,
+                    leftIndent=12,
+                ),
+                Spacer(1, 4),
+            ]
+        else:
+            para = [line]
+            i += 1
+            while (
+                i < len(lines)
+                and lines[i].strip()
+                and not re.match(r"^(#|\||- |\d+\. |!\[)", lines[i])
+            ):
+                para.append(lines[i])
+                i += 1
+            flow += [Paragraph(_inline(" ".join(para)), body), Spacer(1, 4)]
+    return flow
+
+
+def build_pdf(md_path: Path, pdf_path: Path) -> Path:
+    doc = SimpleDocTemplate(
+        str(pdf_path),
+        pagesize=A4,
+        leftMargin=2 * cm,
+        rightMargin=2 * cm,
+        topMargin=1.8 * cm,
+        bottomMargin=1.8 * cm,
+        title="8D report: recall 22V-317",
+    )
+    doc.build(markdown_to_flowables(md_path.read_text(encoding="utf-8"), md_path.parent))
+    return pdf_path
+
+
+def main() -> None:
+    ishikawa_figure(REPORTS / "figures" / "8d_ishikawa.png")
+    build_pdf(REPORTS / "8D.md", REPORTS / "8D.pdf")
+    print("wrote reports/figures/8d_ishikawa.png and reports/8D.pdf")
+
+
+if __name__ == "__main__":
+    main()
