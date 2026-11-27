@@ -107,6 +107,8 @@ A complaint can name several components, so the 7,483 complaints make 12,837 com
 
 **FAA SDR** (yearly files for 2024 and 2025, extracted 2026-11-26, `python -m src.data.download_faa_sdr`): 154 reports for the Airbus A318–A321 with JASC codes 24xx (90 in 2024, 64 in 2025).
 
+**Simulated crimp height** (`python -m src.simulate.crimp`, seeded): 1,800 parts from 2 machines, 3 shifts and 30 days in subgroups of 5, spec 1.80 ± 0.05 mm, with two special causes injected and kept out of the analysis table. Details: [data/README.md](data/README.md#simulated-crimp-height).
+
 **Recall 22V-317 documents** (Part 573 reports, chronology, service bulletin) for the 8D: listed with links in [reports/8D.md](reports/8D.md).
 
 ## Method
@@ -140,6 +142,7 @@ python -m src.data.download_nhtsa      # NHTSA complaints and recalls -> data/pr
 python -m src.data.download_faa_sdr    # FAA SDR, A320 family, ATA 24 -> data/processed/
 jupyter nbconvert --to notebook --execute --inplace notebooks/01_field_failures.ipynb
 python -m src.reports.build_8d         # Ishikawa figure and reports/8D.pdf from reports/8D.md
+python -m src.simulate.crimp           # simulated crimp height -> data/simulated/
 ```
 
 The notebook writes the figures to `reports/figures/` and the Pareto tables to `reports/tables/`.
