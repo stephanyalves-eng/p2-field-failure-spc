@@ -89,6 +89,24 @@ Notebook: [notebooks/01_field_failures.ipynb](notebooks/01_field_failures.ipynb)
 
 ![Ishikawa](reports/figures/8d_ishikawa.png)
 
+### SPC: X-bar and R charts on simulated crimp height
+
+Notebook: [notebooks/02_spc_capability.ipynb](notebooks/02_spc_capability.ipynb). Signal log: [reports/tables/spc_signal_log.csv](reports/tables/spc_signal_log.csv).
+
+Limits per machine from a Phase I baseline (first 5 days, 30 subgroups of 5), then all 180 subgroups per machine checked with the four Western Electric rules.
+
+| Machine | X-bar center (mm) | X-bar limits (mm) | R-bar (mm) | R UCL (mm) | X-bar signals | R signals |
+|---|---:|---|---:|---:|---:|---:|
+| A | 1.8013 | 1.7855 – 1.8172 | 0.0274 | 0.0580 | 8 | 3 |
+| B | 1.8011 | 1.7857 – 1.8165 | 0.0267 | 0.0565 | 90 | 3 |
+
+- Machine B: from subgroup 182 (day 16, shift 1) the X-bar chart fires on all 90 machine B subgroups through the end of the run, starting with a point above the upper limit; before subgroup 182 it fires on none.
+- Machine A: 8 scattered X-bar signals (1 inside the baseline), with no sustained pattern.
+- R chart: all 6 range signals, on both machines, fall on shift 3. Grouping ranges by shift gives sigma estimates on shift 3 of 1.66× (A) and 1.39× (B) those of shift 1; shift 2 stays within 5% of shift 1.
+- Which signals are special causes and which are false alarms is scored against the simulated truth in the capability step (#10).
+
+![Machine B X-bar and R](reports/figures/spc_xbar_r_machine_B.png)
+
 ## Data
 
 Sources, extraction dates and licenses: [data/README.md](data/README.md).
@@ -117,6 +135,7 @@ A complaint can name several components, so the 7,483 complaints make 12,837 com
 - **Counting:** a complaint counts once in every group it names; Pareto shares are shares of these complaint-group mentions. "Unknown or other" and "Not coded" stay in the denominator and are excluded from the top 3.
 - **Electrical failure modes:** coded from the complaint narrative with ordered keyword rules, first match wins ([data/mappings/electrical_failure_modes.csv](data/mappings/electrical_failure_modes.csv)).
 - **FAA SDR:** reports filtered to the A320 family and JASC codes 24xx; Pareto by JASC subsystem (official titles, [data/mappings/jasc_ata24.csv](data/mappings/jasc_ata24.csv)) and by part group ([data/mappings/sdr_part_groups.csv](data/mappings/sdr_part_groups.csv)).
+- **SPC:** X-bar and R limits from R-bar with the NIST factors A2, D3, D4 ([NIST/SEMATECH e-Handbook 6.3.2.1](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc321.htm)); d2 by numerical integration, checked against NIST's A2 for n = 2–10. Western Electric rules 1–4 on the X-bar chart; rule 1 and the 8-point run on the R chart.
 - **Trend by model year:** share of each model year's complaints that name the electrical system, because sales volumes are not available to compute rates.
 
 ## Limitations

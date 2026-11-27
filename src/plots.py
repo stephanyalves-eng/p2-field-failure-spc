@@ -106,3 +106,47 @@ def share_trend_chart(
     fig.savefig(path, dpi=150)
     plt.close(fig)
     return path
+
+
+SIGNAL = "#eb6834"  # categorical slot 2 (orange), used for points that fire a rule
+
+
+def xbar_r_chart(table: pd.DataFrame, lim: dict, title: str, path: Path) -> Path:
+    """Two stacked panels: X-bar chart and R chart, Phase I baseline shaded, signals marked."""
+    fig, (ax_x, ax_r) = plt.subplots(
+        2, 1, figsize=(11, 6), sharex=True, facecolor=SURFACE, height_ratios=[3, 2]
+    )
+    x = table["subgroup"].to_numpy()
+    base = table.loc[table["baseline"], "subgroup"]
+    panels = (
+        (ax_x, "mean", "xbar", "xbar_rules", "Subgroup mean (mm)"),
+        (ax_r, "range", "r", "r_rules", "Subgroup range (mm)"),
+    )
+    for ax, col, key, rules, ylabel in panels:
+        if len(base):
+            ax.axvspan(base.min() - 0.5, base.max() + 0.5, color=GRID, alpha=0.6, lw=0)
+        ax.plot(x, table[col], color=SERIES_1, lw=1, marker="o", ms=2.5, zorder=2)
+        hit = table[rules] != ""
+        ax.scatter(x[hit], table.loc[hit, col], s=40, color=SIGNAL, zorder=3,
+                   edgecolor=SURFACE, linewidth=1)  # fmt: skip
+        ax.axhline(lim[f"{key}_center"], color=TEXT_SECONDARY, lw=1)
+        for bound in ("ucl", "lcl"):
+            if key == "r" and bound == "lcl" and lim["r_lcl"] == 0:
+                continue
+            ax.axhline(lim[f"{key}_{bound}"], color=TEXT_SECONDARY, lw=1, ls="--")
+        ax.set_ylabel(ylabel, color=TEXT_SECONDARY, fontsize=9)
+        _style(ax)
+    ax_r.set_xlabel("Subgroup (production order)", color=TEXT_SECONDARY, fontsize=9)
+    handles = [
+        plt.Line2D([], [], color=SERIES_1, marker="o", ms=4, lw=1, label="Subgroup"),
+        plt.Line2D([], [], color=SIGNAL, marker="o", ms=7, lw=0, label="Western Electric signal"),
+        plt.Line2D([], [], color=TEXT_SECONDARY, lw=1, ls="--", label="Control limits"),
+        plt.Rectangle((0, 0), 1, 1, color=GRID, alpha=0.6, label="Phase I baseline"),
+    ]
+    ax_x.legend(handles=handles, loc="upper left", fontsize=8, frameon=False, ncol=4)
+    fig.suptitle(title, x=0.01, ha="left", color=TEXT, fontsize=11, fontweight="bold")
+    fig.tight_layout()
+    path.parent.mkdir(parents=True, exist_ok=True)
+    fig.savefig(path, dpi=150)
+    plt.close(fig)
+    return path
