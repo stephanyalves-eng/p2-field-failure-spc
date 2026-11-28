@@ -44,4 +44,4 @@ def test_inline_markup_escapes_and_links():
     out = _inline("a < b & **bold** [doc](https://x.org/a.pdf)")
     assert "&lt;" in out and "&amp;" in out
     assert "<b>bold</b>" in out
-    assert '<link href="https://x.org/a.pdf" color="blue">doc</link>' in out
+    assert '<link href="https://x.org/a.pdf" color="#2F6B5B">doc</link>' in out
