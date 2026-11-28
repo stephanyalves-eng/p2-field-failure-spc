@@ -138,6 +138,24 @@ Special causes removed on the SPC evidence only: machine B from subgroup 182 on 
 
 ![Capability histograms](reports/figures/capability_histograms.png)
 
+### MSA: crossed Gage R&R by ANOVA
+
+Notebook: [notebooks/03_msa.ipynb](notebooks/03_msa.ipynb). Simulated study: 10 parts from the crimp process, 3 operators, 3 trials, gauge resolution 0.001 mm, tolerance 0.10 mm.
+
+| Source | %Study Var | %Contribution | %Tolerance |
+|---|---:|---:|---:|
+| Total Gage R&R | 24.2% | 5.8% | 13.5% |
+| Repeatability | 24.2% | 5.8% | 13.5% |
+| Reproducibility (operator) | 0.0% | 0.0% | 0.0% |
+| Part-to-part | 97.0% | 94.2% | 54.4% |
+
+- Interaction p = 1.00, so it is pooled into repeatability. ndc = 5.
+- **Decision: conditional.** %GRR 24.2% sits in the 10–30% band and ndc meets the minimum of 5 exactly; the gauge can be used only with a written justification. Repeatability (the instrument itself) is the whole error; operators add nothing measurable.
+- **Against the truth:** the true %GRR is 22.7% and ndc 6, so the estimate is close and the decision (conditional) is the same. But the true operator biases are not zero (spread of about 1.6 µm); with 3 operators the operator component has only 2 degrees of freedom.
+- **Repeating the same study 300 times** with new random draws: %GRR ranges from 16% to 36% (5th–95th percentile), the operator component comes out as zero in 7% of studies, and the decision is conditional in 70% and reject in 30%. A 10 × 3 × 3 study is enough to place this gauge in the conditional band, not to pin %GRR down to a few points.
+
+![Study variation](reports/figures/msa_study_var.png)
+
 ## Data
 
 Sources, extraction dates and licenses: [data/README.md](data/README.md).
@@ -168,6 +186,7 @@ A complaint can name several components, so the 7,483 complaints make 12,837 com
 - **FAA SDR:** reports filtered to the A320 family and JASC codes 24xx; Pareto by JASC subsystem (official titles, [data/mappings/jasc_ata24.csv](data/mappings/jasc_ata24.csv)) and by part group ([data/mappings/sdr_part_groups.csv](data/mappings/sdr_part_groups.csv)).
 - **SPC:** X-bar and R limits from R-bar with the NIST factors A2, D3, D4 ([NIST/SEMATECH e-Handbook 6.3.2.1](https://www.itl.nist.gov/div898/handbook/pmc/section3/pmc321.htm)); d2 by numerical integration, checked against NIST's A2 for n = 2–10. Western Electric rules 1–4 on the X-bar chart; rule 1 and the 8-point run on the R chart.
 - **Capability:** NIST 6.1.6 formulas; Cp/Cpk with within-subgroup sigma (R-bar / d2), Pp/Ppk with the overall standard deviation; approximate 95% interval for Cpk from NIST; Anderson-Darling normality test (SciPy, interpolated p-value) plus a normal probability plot.
+- **Gage R&R:** two-way crossed ANOVA with interaction (pooled when p ≥ 0.05), variance components from expected mean squares, ndc = floor(1.41 × sd_part / sd_GRR); the variance-component step reproduces the published Minitab crossed Gage R&R example (%GRR 27.86%, ndc 4).
 - **Trend by model year:** share of each model year's complaints that name the electrical system, because sales volumes are not available to compute rates.
 
 ## Limitations

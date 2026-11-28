@@ -1,0 +1,8 @@
+source,var_comp,pct_contribution,std_dev,study_var,pct_study_var,pct_tolerance
+Total Gage R&R,5e-06,5.835385,0.002257,0.013544,24.156542,13.54423
+Repeatability,5e-06,5.835385,0.002257,0.013544,24.156542,13.54423
+Reproducibility,0.0,0.0,0.0,0.0,0.0,0.0
+Operator,0.0,0.0,0.0,0.0,0.0,0.0
+Operator * Part,0.0,0.0,0.0,0.0,0.0,0.0
+Part-To-Part,8.2e-05,94.164615,0.009068,0.054408,97.038454,54.408081
+Total Variation,8.7e-05,100.0,0.009345,0.056069,100.0,56.068578
