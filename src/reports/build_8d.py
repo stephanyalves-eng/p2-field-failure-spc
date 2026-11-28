@@ -33,7 +33,20 @@ from reportlab.platypus import (  # noqa: E402
     TableStyle,
 )
 
-from src.plots import GRID, SERIES_1, SURFACE, TEXT, TEXT_SECONDARY  # noqa: E402
+from src.plots import (  # noqa: E402
+    CONTEXT,
+    MONO,
+    SERIES_1,
+    TEXT,
+    TEXT_SECONDARY,
+    TEXT_TERTIARY,
+    _finish,
+)
+
+SAGE_100 = "#E4ECE7"  # --surface-accent, table headers
+BORDER = "#D6D8D2"  # --border-default
+FOREST_900 = "#0B302B"  # --surface-inverse
+IVORY = "#F5F4EC"  # --text-inverse
 
 # Fixed timestamps and document id, so rebuilding the PDF from the same source gives the same bytes.
 rl_config.invariant = 1
@@ -57,24 +70,24 @@ EFFECT = "Fisheye and narrow\ncamera feeds swapped\n(F, S1)"
 
 
 def ishikawa_figure(path: Path) -> Path:
-    """Draw a fishbone diagram with three bones above and three below the spine."""
-    fig, ax = plt.subplots(figsize=(12, 6), facecolor=SURFACE)
+    """Fishbone diagram: three bones above and three below the spine, effect in an inverse
+    (Deep Forest) module, category names as mono eyebrows, square data nodes at the joints."""
+    fig, ax = plt.subplots(figsize=(12, 6.9))
     ax.set_xlim(0, 12)
     ax.set_ylim(0, 6)
     ax.axis("off")
-    ax.annotate(
-        "", xy=(9.6, 3), xytext=(0.4, 3), arrowprops={"arrowstyle": "-|>", "color": TEXT, "lw": 2}
-    )
+    ax.plot([0.4, 9.55], [3, 3], color=TEXT, lw=1.5)
     ax.text(
-        9.75,
+        9.7,
         3,
         EFFECT,
         va="center",
         ha="left",
         fontsize=10,
-        fontweight="bold",
-        color=TEXT,
-        bbox={"boxstyle": "round,pad=0.4", "fc": SURFACE, "ec": SERIES_1, "lw": 1.5},
+        fontweight="medium",
+        color=IVORY,
+        linespacing=1.4,
+        bbox={"boxstyle": "square,pad=0.6", "fc": FOREST_900, "ec": FOREST_900, "lw": 0},
     )
     top = ["Material", "Method", "Man"]
     bottom = ["Machine", "Measurement", "Environment"]
@@ -82,37 +95,41 @@ def ishikawa_figure(path: Path) -> Path:
     for row, sign in ((top, 1), (bottom, -1)):
         for x, name in zip(xs, row, strict=True):
             end_y = 3 + sign * 2.3
-            ax.plot([x - 1.0, x], [end_y, 3], color=SERIES_1, lw=1.6)
+            ax.plot([x - 1.0, x], [end_y, 3], color=SERIES_1, lw=1.5)
+            ax.plot(x, 3, marker="s", ms=6, color=SERIES_1)
             ax.text(
                 x - 1.0,
                 end_y + sign * 0.25,
-                name,
+                name.upper(),
                 ha="center",
                 va="center",
-                fontsize=10.5,
-                fontweight="bold",
-                color=TEXT,
+                fontsize=8.5,
+                fontfamily=MONO,
+                fontweight="medium",
+                color=TEXT_TERTIARY,
             )
             for i, cause in enumerate(ISHIKAWA[name]):
                 frac = 0.35 + 0.4 * i
                 cx = x - 1.0 * (1 - frac)
                 cy = 3 + sign * 2.3 * (1 - frac)
-                ax.plot([cx - 0.25, cx], [cy, cy], color=GRID, lw=1)
+                ax.plot([cx - 0.25, cx], [cy, cy], color=CONTEXT, lw=1)
+                fact = "(F" in cause
                 ax.text(
-                    cx - 0.3, cy, cause, ha="right", va="center", fontsize=7.5, color=TEXT_SECONDARY
+                    cx - 0.3,
+                    cy,
+                    cause,
+                    ha="right",
+                    va="center",
+                    fontsize=7.8,
+                    color=TEXT if fact else TEXT_SECONDARY,
                 )
-    ax.set_title(
+    return _finish(
+        fig,
         "Ishikawa (6M): recall 22V-317, swapped camera terminals",
-        loc="left",
-        fontsize=12,
-        fontweight="bold",
-        color=TEXT,
+        path,
+        eyebrow="8D · Root cause",
+        source="NHTSA recall 22V-317 documents; (F) published fact, (H) hypothesis",
     )
-    fig.tight_layout()
-    path.parent.mkdir(parents=True, exist_ok=True)
-    fig.savefig(path, dpi=150)
-    plt.close(fig)
-    return path
 
 
 def _inline(text: str) -> str:
@@ -120,11 +137,11 @@ def _inline(text: str) -> str:
     text = text.replace("&", "&amp;").replace("<", "&lt;").replace(">", "&gt;")
     text = re.sub(r"\*\*(.+?)\*\*", r"<b>\1</b>", text)
     text = re.sub(
-        r"\[([^\]]+)\]\((https?://[^)]+)\)", r'<link href="\2" color="blue">\1</link>', text
+        r"\[([^\]]+)\]\((https?://[^)]+)\)", r'<link href="\2" color="#2F6B5B">\1</link>', text
     )
     text = re.sub(r"\[([^\]]+)\]\(([^)]+)\)", r"\1", text)  # relative links: keep the text
     text = re.sub(
-        r"(?<![\"'>])(https?://[^\s|)<]+)", r'<link href="\1" color="blue">\1</link>', text
+        r"(?<![\"'>])(https?://[^\s|)<]+)", r'<link href="\1" color="#2F6B5B">\1</link>', text
     )
     return text
 
@@ -168,8 +185,8 @@ def markdown_to_flowables(md: str, base: Path) -> list:
             table.setStyle(
                 TableStyle(
                     [
-                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor("#e9eef7")),
-                        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor(GRID)),
+                        ("BACKGROUND", (0, 0), (-1, 0), colors.HexColor(SAGE_100)),
+                        ("GRID", (0, 0), (-1, -1), 0.4, colors.HexColor(BORDER)),
                         ("VALIGN", (0, 0), (-1, -1), "TOP"),
                     ]
                 )
